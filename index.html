@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Razorpay — Payment Request Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:           #f8fafc;
+  --white:        #ffffff;
+  --border:       #e2e8f0;
+  --border-input: #cbd5e1;
+  --focus:        #136cff;
+  --focus-ring:   rgba(19, 108, 255, 0.12);
+  --text:         #0f172a;
+  --sub:          #475569;
+  --muted:        #64748b;
+  --placeholder:  #94a3b8;
+  --primary:      #136cff;
+  --primary-dark: #0056d2;
+  --primary-bg:   #eef5ff;
+  --green:        #10b981;
+  --green-dark:   #047857;
+  --green-bg:     #ecfdf5;
+  --error:        #ef4444;
+  --error-bg:     #fef2f2;
+  --error-border: #fca5a5;
+  --yellow:       #f59e0b;
+  --yellow-bg:    #fffbeb;
+  --shadow-top:   0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-card:  0 4px 20px rgba(15, 23, 42, 0.04), 0 0 0 1px var(--border);
+  --shadow-btn:   0 4px 14px rgba(19, 108, 255, 0.25);
+
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─────────────── HEADER ─────────────── */
+.header {
+  width: 100%;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky; top: 0; z-index: 99;
+  box-shadow: var(--shadow-top);
+}
+
+.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+
+.logo-mark {
+  width: 32px; height: 32px;
+  background: var(--primary);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-mark svg { width: 18px; height: 18px; fill: white; }
+
+.logo-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.dashboard-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fafbfc;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.dashboard-link:hover {
+  background: var(--primary-bg);
+  border-color: var(--primary);
+}
+
+.header-lock {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--green-dark);
+  letter-spacing: 0.1px;
+}
+
+/* ─────────────── MERCHANT STRIP ─────────────── */
+.merchant {
+  width: 100%;
+  max-width: 480px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 0 auto;
+}
+
+.mer-avatar {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #136cff, #0a3d91);
+  color: white;
+  font-weight: 800;
+  font-size: 1.15rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
+}
+
+.mer-info { flex: 1; min-width: 0; }
+.mer-name { font-size: 0.92rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mer-order { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+.mer-amt {
+  font-family: 'Fira Mono', monospace;
+  font-size: 1.22rem;
+  font-weight: 500;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+/* ─────────────── LAYOUT ─────────────── */
+.page {
+  width: 100%;
+  max-width: 480px;
+  padding: 24px 16px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0 auto;
+}
+
+/* ─────────────── TABS ─────────────── */
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--white);
+  border-radius: 12px 12px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  overflow: hidden;
+}
+
+.tab {
+  padding: 14px 12px;
+  background: #f8fafc;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-bottom: 3px solid transparent;
+  transition: all 0.15s ease;
+  letter-spacing: 0.05px;
+  position: relative;
+}
+
+.tab + .tab { border-left: 1px solid var(--border); }
+
+.tab.active {
+  background: var(--white);
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.tab svg { flex-shrink: 0; }
+
+/* ─────────────── CARD BODY ─────────────── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 24px 20px;
+  box-shadow: var(--shadow-card);
+}
+
+/* ─────────────── PANEL ─────────────── */
+.panel { display: none; flex-direction: column; gap: 20px; }
+.panel.active { display: flex; }
+
+/* ─────────────── FIELD ─────────────── */
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+.f-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sub);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.f-req { color: var(--error); font-size: 0.8rem; line-height: 1; }
+
+.f-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.f-ico {
+  position: absolute;
+  left: 14px;
+  pointer-events: none;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  background: var(--white);
+  border: 1.5px solid var(--border-input);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.94rem;
+  font-weight: 400;
+  color: var(--text);
+  outline: none;
+  transition: all 0.15s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input::placeholder { color: var(--placeholder); font-weight: 400; }
+
+input:focus, select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+input:focus + .f-ico, .f-wrap:focus-within .f-ico { color: var(--primary); }
+
+input.has-err { border-color: var(--error-border); background: var(--error-bg); }
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+/* Amount */
+.f-rupee {
+  position: absolute;
+  left: 14px;
+  font-family: 'Fira Mono', monospace;
+  font-size: 1.05rem;
+  color: var(--sub);
+  pointer-events: none;
+  font-weight: 500;
+}
+
+.amt-input {
+  padding-left: 30px !important;
+  font-family: 'Fira Mono', monospace !important;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.3px;
+}
+
+/* Hint */
+.f-hint {
+  font-size: 0.7rem;
+  color: var(--muted);
+  padding-left: 2px;
+}
+
+/* Error */
+.f-err {
+  font-size: 0.72rem;
+  color: var(--error);
+  display: none;
+  align-items: center;
+  gap: 5px;
+  padding-left: 2px;
+  font-weight: 600;
+}
+.f-err.show { display: flex; }
+.f-err svg { flex-shrink: 0; }
+
+/* ─────────────── PAY BUTTON ─────────────── */
+.pay-btn {
+  width: 100%;
+  height: 48px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.96rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.16s ease;
+  box-shadow: var(--shadow-btn);
+  margin-top: 6px;
+}
+
+.pay-btn:hover  { background: var(--primary-dark); box-shadow: 0 4px 18px rgba(19, 108, 255, 0.35); }
+.pay-btn:active { transform: scale(0.99); }
+
+.pay-btn .spinner {
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: none;
+}
+
+.pay-btn.loading .btn-label { display: none; }
+.pay-btn.loading .spinner   { display: block; }
+
+.secure-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  padding-top: 6px;
+}
+
+/* ══════════════════════════════════
+   AUTHENTIC RAZORPAY RECEIPT VIEW
+══════════════════════════════════ */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.overlay.show { display: flex; animation: fadein 0.2s ease-out; }
+
+.receipt-card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--white);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  animation: cardscale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes cardscale {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.rc-header {
+  padding: 20px 24px;
+  background: #0f172a;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rc-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rc-logo svg {
+  width: 22px;
+  height: 22px;
+  fill: #136cff;
+}
+
+.rc-logo-text {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+
+.rc-header-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: #94a3b8;
+}
+
+.rc-hero {
+  padding: 28px 24px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  background: #fafafa;
+}
+
+.status-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  transition: all 0.3s ease;
+  background: #eff6ff;
+  color: var(--primary);
+  border: 1px dashed rgba(19, 108, 255, 0.4);
+}
+
+.status-circle svg {
+  animation: rotateClock 12s linear infinite;
+}
+
+@keyframes rotateClock { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.rc-status-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.rc-amount {
+  font-family: 'Fira Mono', monospace;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -1.2px;
+  line-height: 1.2;
+}
+
+.rc-amount sup {
+  font-size: 1.1rem;
+  font-weight: 600;
+  vertical-align: super;
+  margin-right: 2px;
+}
+
+.rc-details-section {
+  padding: 24px;
+  flex: 1;
+}
+
+.rc-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.rc-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.rc-grid-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 0.85rem;
+}
+
+.rc-label {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.rc-value {
+  color: var(--text);
+  font-weight: 600;
+  text-align: right;
+  max-width: 65%;
+  word-break: break-all;
+}
+
+.rc-value.mono {
+  font-family: 'Fira Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--sub);
+}
+
+.rc-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--primary-bg);
+  color: var(--primary);
+}
+
+.rc-status-badge .pulse-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: pulseAnim 1.5s infinite;
+}
+
+@keyframes pulseAnim { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.6); opacity: 0.2; } }
+
+.rc-actions {
+  padding: 0 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rc-btn-primary {
+  width: 100%;
+  height: 44px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 10px rgba(19, 108, 255, 0.15);
+}
+
+.rc-btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.rc-btn-secondary {
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  color: var(--sub);
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rc-btn-secondary:hover {
+  border-color: var(--muted);
+  color: var(--text);
+  background: #fafafa;
+}
+
+.rc-footer {
+  text-align: center;
+  font-size: 0.68rem;
+  color: var(--muted);
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  background: #fafafa;
+  line-height: 1.4;
+}
+
+.rc-footer-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-weight: 700;
+  color: var(--sub);
+}
+
+.rc-footer-logo svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--primary);
+}
+
+
+@media(max-width: 480px) {
+  .overlay { padding: 0; align-items: flex-end; }
+  .receipt-card { border-radius: 16px 16px 0 0; max-width: 100%; animation: sheetup 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+  .header { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header" id="main-header">
+  <a href="#" class="logo">
+    <div class="logo-mark" style="background: transparent; width: auto; height: 32px; display: flex; align-items: center; justify-content: center;">
+      <img src="download.png" alt="Razorpay" style="height: 24px; display: block;" onerror="this.style.display='none'; document.getElementById('rzp-svg-logo').style.display='block';" />
+      <svg id="rzp-svg-logo" style="display: none; height: 20px;" viewBox="0 0 24 24" fill="#136cff">
+        <path d="M22.436 0l-11.91 7.773-1.174 4.276 6.625-4.297L11.65 24h4.391l6.395-24zM14.26 10.098L3.389 17.166 1.564 24h9.008l3.688-13.902Z"/>
+      </svg>
+    </div>
+    <span class="logo-name">Razorpay</span>
+  </a>
+  <div class="header-right">
+    <div class="header-lock">
+      <svg width="11" height="12" viewBox="0 0 14 16" fill="currentColor"><path d="M7 1C4.8 1 3 2.8 3 5v1H1v9h12V6h-2V5c0-2.2-1.8-4-4-4zm0 2c1.1 0 2 .9 2 2v1H5V5c0-1.1.9-2 2-2z"/></svg>
+      Secure SSL
+    </div>
+  </div>
+</div>
+
+<!-- VIEW 1: PAYMENT REQUEST FORM -->
+<div id="view-form" style="width: 100%; display: flex; flex-direction: column;">
+  <!-- PAGE -->
+  <div class="page">
+    <div class="tabs">
+      <div class="tab active" style="border-bottom: none; cursor: default; pointer-events: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <img src="upi-logo.png" alt="UPI" style="height: 18px; width: auto; display: block;" onerror="this.style.display='none'; document.getElementById('upi-svg-logo').style.display='block';" />
+        <svg id="upi-svg-logo" style="display: none; height: 16px; width: auto;" viewBox="0 0 333334 199007" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd">
+          <path d="M44732 130924h1856l-1738 7215c-265 1061-206 1885 147 2415 354 530 1001 795 1973 795 942 0 1737-265 2356-795 618-531 1031-1355 1296-2415l1737-7215h1885l-1767 7392c-383 1590-1060 2798-2061 3593-972 795-2268 1208-3858 1208s-2680-383-3269-1179c-589-795-707-2002-324-3592l1767-7421zm223507 11868l2826-11868h6449l-383 1649h-4564l-706 2974h4564l-413 1679h-4564l-913 3827h4565l-412 1738h-6449zm-177-8982c-413-470-913-824-1443-1031-531-235-1119-353-1797-353-1266 0-2385 412-3386 1237s-1649 1915-1973 3239c-295 1267-177 2327 413 3181 559 824 1442 1237 2620 1237 677 0 1355-118 2031-383 678-235 1356-619 2062-1119l-530 2179c-589 382-1207 648-1856 825-648 176-1296 265-2002 265-883 0-1679-148-2356-443-678-294-1236-736-1679-1324-441-560-706-1237-824-2002-117-766-88-1590 148-2474 206-883 559-1680 1031-2445 471-766 1089-1443 1796-2002 706-589 1472-1030 2297-1325 824-294 1648-441 2503-441 677 0 1295 88 1885 294 559 207 1089 500 1560 913l-500 1972zm-18317 4300h3209l-530-2710c-29-176-59-383-59-589-30-235-30-471-30-736-118 265-235 500-383 736-118 235-235 442-353 619l-1855 2680zm4093 4682l-589-3062h-4594l-2062 3062h-1972l8539-12338 2650 12338h-1972" fill="#3a3734"/>
+          <path d="M233961 120588h-12927l17963-64873h12927l-17963 64873zm-107424-4064c-707 2562-3063 4358-5713 4358H54185c-1826 0-3180-619-4064-1855-883-1238-1089-2769-559-4594l16255-58541h12928l-14518 52298h51710l14517-52298h12928l-16844 60632zm100710-58777c-883-1237-2268-1855-4152-1855h-71027l-3504 12721h64608l-3769 13576h-51680v-30h-12927l-10719 38724h12927l7185-25973h58100c1826 0 3534-619 5124-1855 1590-1237 2651-2768 3151-4594l7185-25972c559-1943 383-3504-501-4741z" fill="#716d6a"/>
+          <path fill="#0e8635" d="M274245 55833l16344 32510-34365 32510 4087-14747 18794-17763-8941-17785z"/>
+          <path fill="#e97208" d="M262762 55833l16343 32510-34395 32510z"/>
+        </svg>
+        <span>UPI</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <!-- UPI PANEL -->
+      <div class="panel active" id="panelUpi">
+        <div class="field">
+          <div class="f-label">Payee Full Name <span class="f-req">*</span></div>
+          <div class="f-wrap">
+            <span class="f-ico">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </span>
+            <input type="text" id="u-name" placeholder="Rahul Sharma" autocomplete="name">
+          </div>
+          <div class="f-err" id="e-u-name">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="var(--error)"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 3.5h1.5v4.5h-1.5V4.5zm0 6h1.5v1.5h-1.5v-1.5z"/></svg>
+            Payee name is required
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="f-label">Contact Number <span class="f-req">*</span></div>
+          <div class="f-wrap">
+            <span class="f-ico">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17.5" r="0.7" fill="currentColor" stroke="none"/></svg>
+            </span>
+            <input type="tel" id="u-mob" placeholder="98765 43210" maxlength="10" autocomplete="tel" inputmode="numeric">
+          </div>
+          <div class="f-err" id="e-u-mob">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="var(--error)"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 3.5h1.5v4.5h-1.5V4.5zm0 6h1.5v1.5h-1.5v-1.5z"/></svg>
+            Enter a valid 10-digit contact number
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="f-label">Payee UPI ID <span class="f-req">*</span></div>
+          <div class="f-wrap">
+            <span class="f-ico">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8l-9-5-9 5v8l9 5 9-5z"/></svg>
+            </span>
+            <input type="text" id="u-upi" placeholder="yourname@okicici" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="f-hint">e.g. name@okhdfc &nbsp;·&nbsp; 9876543210@paytm &nbsp;·&nbsp; name@ybl</div>
+          <div class="f-err" id="e-u-upi">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="var(--error)"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 3.5h1.5v4.5h-1.5V4.5zm0 6h1.5v1.5h-1.5v-1.5z"/></svg>
+            Enter a valid UPI ID (e.g. name@bank)
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="f-label">Amount <span class="f-req">*</span></div>
+          <div class="f-wrap">
+            <span class="f-rupee">₹</span>
+            <input class="amt-input" type="number" id="u-amt" placeholder="0.00" min="1" step="0.01" inputmode="decimal">
+          </div>
+          <div class="f-err" id="e-u-amt">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="var(--error)"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 3.5h1.5v4.5h-1.5V4.5zm0 6h1.5v1.5h-1.5v-1.5z"/></svg>
+            Enter a valid amount (min ₹1)
+          </div>
+        </div>
+
+        <button class="pay-btn" id="btn-upi" onclick="createPaymentRequest()">
+          <span class="btn-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8l-9-5-9 5v8l9 5 9-5z"/></svg>
+            Request via UPI
+          </span>
+          <div class="spinner"></div>
+        </button>
+
+        <div class="secure-note">
+          <svg width="10" height="10" viewBox="0 0 14 16" fill="var(--muted)"><path d="M7 1C4.8 1 3 2.8 3 5v1H1v9h12V6h-2V5c0-2.2-1.8-4-4-4zm0 2c1.1 0 2 .9 2 2v1H5V5c0-1.1.9-2 2-2z"/></svg>
+          Secured by Razorpay &nbsp;·&nbsp; Powered by NPCI UPI
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+<!-- VIEW 3: AUTHENTIC RAZORPAY RECEIPT OVERLAY -->
+<div class="overlay" id="overlay-receipt">
+  <div class="receipt-card">
+    <div class="rc-header">
+      <div class="rc-logo" style="display: flex; align-items: center; gap: 8px;">
+        <img src="download.png" alt="Razorpay" style="height: 20px; display: block;" onerror="this.style.display='none'; document.getElementById('rzp-rc-svg-logo').style.display='block';" />
+        <svg id="rzp-rc-svg-logo" style="display: none; height: 18px;" viewBox="0 0 24 24" fill="#136cff">
+          <path d="M22.436 0l-11.91 7.773-1.174 4.276 6.625-4.297L11.65 24h4.391l6.395-24zM14.26 10.098L3.389 17.166 1.564 24h9.008l3.688-13.902Z"/>
+        </svg>
+        <span class="rc-logo-text">Razorpay</span>
+      </div>
+      <div class="rc-header-badge">Payment Requested</div>
+    </div>
+
+    <div class="rc-hero">
+      <div class="status-circle">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <div class="rc-status-title">Payment Requested</div>
+      <div class="rc-amount" id="rc-amt-val"><sup>₹</sup>0.00</div>
+    </div>
+
+    <div class="rc-details-section">
+      <div class="rc-section-title">Request Details</div>
+      
+      <div class="rc-grid">
+        <div class="rc-grid-row">
+          <span class="rc-label">Payment ID</span>
+          <span class="rc-value mono" id="rc-id-val">—</span>
+        </div>
+
+        <div class="rc-grid-row">
+          <span class="rc-label">Payee Name</span>
+          <span class="rc-value" id="rc-payee-val">—</span>
+        </div>
+        <div class="rc-grid-row">
+          <span class="rc-label" id="rc-lbl-det-1">UPI ID</span>
+          <span class="rc-value" id="rc-val-det-1">—</span>
+        </div>
+        <div class="rc-grid-row" id="rc-row-det-2">
+          <span class="rc-label" id="rc-lbl-det-2">Contact No.</span>
+          <span class="rc-value" id="rc-val-det-2">—</span>
+        </div>
+        <div class="rc-grid-row">
+          <span class="rc-label">Created At</span>
+          <span class="rc-value" id="rc-date-val">—</span>
+        </div>
+        <div class="rc-grid-row">
+          <span class="rc-label">Method</span>
+          <span class="rc-value" id="rc-method-val">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rc-actions">
+      <button class="rc-btn-primary" onclick="dismissReceipt()" style="background-color: var(--primary);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="16 9 11 14 8 11"></polyline>
+        </svg>
+        Done
+      </button>
+    </div>
+
+    <div class="rc-footer">
+      <div>This is a secure electronic request document generated automatically by the Razorpay Platform.</div>
+      <div class="rc-footer-logo">
+        <svg viewBox="0 0 24 24"><path d="M4 19L12 3L20 19H14.8L12 13.5L9.2 19H4Z"/></svg>
+        <span>Secured by Razorpay</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<script type="module">
+  let activeTab = 'upi';
+  let activeReceiptId = '';
+
+  // ─────────────── DATABASE OPERATIONS ───────────────
+  const DB = {
+    saveTransaction: async function(txn) {
+      try {
+        const response = await fetch('/api/transactions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(txn)
+        });
+        if (!response.ok) {
+          throw new Error('API request failed');
+        }
+        console.log(`Saved transaction ${txn.id} securely via API.`);
+      } catch (e) {
+        console.error("Failed to save transaction to API, falling back to localStorage:", e);
+        // Fallback local storage logging
+        const data = localStorage.getItem('rp_clone_txns');
+        const txns = data ? JSON.parse(data) : [];
+        txns.unshift(txn);
+        localStorage.setItem('rp_clone_txns', JSON.stringify(txns));
+      }
+    },
+    getById: async function(id) {
+      try {
+        const response = await fetch(`/api/transactions/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data && !data.error) {
+            return data;
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch transaction from API, falling back to localStorage:", e);
+      }
+      
+      // Local storage fallback
+      const data = localStorage.getItem('rp_clone_txns');
+      const txns = data ? JSON.parse(data) : [];
+      return txns.find(t => t.id === id) || null;
+    }
+  };
+
+  // Generate ID matching pay_ + 14 alphanumeric characters
+  function generateRazorpayId() {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let rand = '';
+    for(let i=0; i<14; i++) {
+      rand += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return 'pay_' + rand;
+  }
+
+  // ─────────────── ROUTING (HASH BASED) ───────────────
+  async function handleHashRoute() {
+    const hash = window.location.hash;
+    
+    // Default hiding
+    document.getElementById('view-form').style.display = 'none';
+    document.getElementById('overlay-receipt').style.display = 'none';
+    
+    if (hash.startsWith('#txn=')) {
+      const txnId = hash.substring(5);
+      const txn = await DB.getById(txnId);
+      
+      if (txn) {
+        // Load data into receipt card
+        activeReceiptId = txn.id;
+        document.getElementById('rc-amt-val').innerHTML = `<sup>₹</sup>` + fAmt(txn.amount);
+        document.getElementById('rc-id-val').textContent = txn.id;
+        document.getElementById('rc-payee-val').textContent = txn.name;
+        document.getElementById('rc-date-val').textContent = fDate(new Date(txn.createdAt));
+        
+        const methodValEl = document.getElementById('rc-method-val');
+        const lblDet1 = document.getElementById('rc-lbl-det-1');
+        const valDet1 = document.getElementById('rc-val-det-1');
+        const rowDet2 = document.getElementById('rc-row-det-2');
+        const lblDet2 = document.getElementById('rc-lbl-det-2');
+        const valDet2 = document.getElementById('rc-val-det-2');
+        
+        if (txn.mode === 'UPI') {
+          methodValEl.textContent = 'UPI';
+          lblDet1.textContent = 'UPI ID';
+          valDet1.textContent = txn.upiId;
+          rowDet2.style.display = 'flex';
+          lblDet2.textContent = 'Contact No.';
+          valDet2.textContent = '+91 ' + txn.mobile;
+        } else {
+          methodValEl.textContent = 'Net Banking (' + txn.bankName + ')';
+          lblDet1.textContent = 'Account Holder';
+          valDet1.textContent = txn.accountName;
+          rowDet2.style.display = 'flex';
+          lblDet2.textContent = 'IFSC Code';
+          valDet2.textContent = txn.ifsc;
+        }
+        
+        // Show overlay
+        document.getElementById('overlay-receipt').style.display = 'flex';
+        document.getElementById('overlay-receipt').classList.add('show');
+        document.body.style.overflow = 'hidden';
+      } else {
+        alert('Transaction ID not found. Returning to form.');
+        window.location.hash = '';
+      }
+    } else {
+      // Default: Payment Form View
+      document.getElementById('view-form').style.display = 'flex';
+    }
+  }
+
+  window.addEventListener('hashchange', handleHashRoute);
+  window.addEventListener('DOMContentLoaded', handleHashRoute);
+
+  // ─────────────── FORM INPUTS & VALIDATIONS ───────────────
+  function setE(id, show) {
+    document.getElementById('e-'+id).classList.toggle('show', show);
+    const inp = document.getElementById(id);
+    if(inp) inp.classList.toggle('has-err', show);
+  }
+
+  // Validations
+  function validateUpi() {
+    let ok = true;
+    const name = document.getElementById('u-name').value.trim();
+    const mob  = document.getElementById('u-mob').value.replace(/\D/g,'');
+    const upi  = document.getElementById('u-upi').value.trim();
+    const amt  = parseFloat(document.getElementById('u-amt').value);
+
+    if(name.length < 2)                         { setE('u-name',true); ok=false; } else setE('u-name',false);
+    if(mob.length !== 10)                        { setE('u-mob', true); ok=false; } else setE('u-mob', false);
+    if(!/^[\w.\-+]+@[a-zA-Z]+$/.test(upi))      { setE('u-upi', true); ok=false; } else setE('u-upi', false);
+    if(isNaN(amt) || amt < 1)                    { setE('u-amt', true); ok=false; } else setE('u-amt', false);
+    return ok;
+  }
+
+  // Submit Handler
+  async function createPaymentRequest() {
+    const valid = validateUpi();
+    if (!valid) return;
+
+    const btn = document.getElementById('btn-upi');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    let transaction = {
+      id: generateRazorpayId(),
+      mode: 'UPI',
+      createdAt: new Date().toISOString(),
+      name: document.getElementById('u-name').value.trim(),
+      mobile: document.getElementById('u-mob').value.trim(),
+      upiId: document.getElementById('u-upi').value.trim(),
+      amount: parseFloat(document.getElementById('u-amt').value)
+    };
+
+    // Persist to Neon DB
+    await DB.saveTransaction(transaction);
+
+    // Simulate 1.8s load spinner
+    setTimeout(() => {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+      
+      // Clear inputs
+      clearFormInputs();
+      
+      // Update hash routing to open receipt sheet directly
+      window.location.hash = `#txn=${transaction.id}`;
+    }, 1800);
+  }
+
+  function clearFormInputs() {
+    document.getElementById('u-name').value = '';
+    document.getElementById('u-mob').value = '';
+    document.getElementById('u-upi').value = '';
+    document.getElementById('u-amt').value = '';
+  }
+
+  // ─────────────── RECEIPT ACTIONS ───────────────
+  function dismissReceipt() {
+    document.getElementById('overlay-receipt').classList.remove('show');
+    setTimeout(() => {
+      document.getElementById('overlay-receipt').style.display = 'none';
+      document.body.style.overflow = '';
+      window.location.hash = ''; // return to main form
+    }, 200);
+  }
+
+  // ─────────────── UTILS ───────────────
+  function fAmt(v) { return v.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function fDate(d){ 
+    return d.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:true}).replace(',',' ·'); 
+  }
+
+  // Attach global functions to window so inline HTML event handlers can call them
+  window.createPaymentRequest = createPaymentRequest;
+  window.dismissReceipt = dismissReceipt;
+
+  // Event Listeners for constraints
+  document.getElementById('u-mob').addEventListener('input', function(){ this.value = this.value.replace(/\D/g,'').slice(0,10); });
+</script>
+</body>
+</html>
